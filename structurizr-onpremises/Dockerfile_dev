@@ -1,0 +1,3 @@
+FROM eclipse-temurin
+
+CMD ["/bin/bash"]
