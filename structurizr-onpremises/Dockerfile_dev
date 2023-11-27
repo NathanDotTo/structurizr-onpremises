@@ -1,3 +1,4 @@
-FROM eclipse-temurin
+FROM eclipse-temurin:17.0.9_9-jdk
 
 CMD ["/bin/bash"]
+#Use ./gradlew clean build -x integrationTest to build without integration tests.
