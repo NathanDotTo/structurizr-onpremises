@@ -3,6 +3,7 @@ package com.structurizr.onpremises.component.workspace;
 import com.structurizr.Workspace;
 import com.structurizr.configuration.Role;
 import com.structurizr.configuration.Visibility;
+import com.structurizr.configuration.WorkspaceScope;
 import com.structurizr.encryption.AesEncryptionStrategy;
 import com.structurizr.encryption.EncryptedWorkspace;
 import com.structurizr.encryption.EncryptionLocation;
@@ -183,7 +184,7 @@ public class WorkspaceComponentImplTests {
         long workspaceId = workspaceComponent.createWorkspace(null);
 
         assertEquals(1, workspaceId);
-        assertEquals(String.format("{\"id\":1,\"name\":\"Workspace 0001\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
+        assertEquals(String.format("{\"id\":1,\"name\":\"Workspace 0001\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
     }
 
     @Test
@@ -262,7 +263,7 @@ public class WorkspaceComponentImplTests {
 
         WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "password");
         String json = workspaceComponent.getWorkspace(1, "");
-        assertEquals("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", json);
+        assertEquals("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"configuration\":{},\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", json);
     }
 
     @Test
@@ -313,13 +314,13 @@ public class WorkspaceComponentImplTests {
 
         WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "");
         workspaceComponent.putWorkspace(1, json);
-        assertEquals(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
+        assertEquals(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
 
         // and again, to increment the revision
         json = jsonBuffer.toString();
         jsonBuffer.setLength(0);
         workspaceComponent.putWorkspace(1, json);
-        assertEquals(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
+        assertEquals(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"model\":{},\"documentation\":{},\"views\":{\"configuration\":{\"branding\":{},\"styles\":{},\"terminology\":{}}}}", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate())), jsonBuffer.toString());
     }
 
     @Test
@@ -343,14 +344,14 @@ public class WorkspaceComponentImplTests {
 
         WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "password");
         workspaceComponent.putWorkspace(1, json);
-        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
+        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
 
         // and again, to increment the revision
         json = jsonBuffer.toString();
         jsonBuffer.setLength(0);
         workspaceComponent.putWorkspace(1, json);
         System.out.println(jsonBuffer);
-        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
+        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
     }
 
     @Test
@@ -379,14 +380,14 @@ public class WorkspaceComponentImplTests {
 
         WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "");
         workspaceComponent.putWorkspace(1, json);
-        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
+        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":1,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
         assertTrue(jsonBuffer.toString().endsWith((json.substring(json.indexOf("ciphertext")))));
 
         // and again, to increment the revision
         json = jsonBuffer.toString();
         jsonBuffer.setLength(0);
         workspaceComponent.putWorkspace(1, json);
-        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
+        assertTrue(jsonBuffer.toString().startsWith(String.format("{\"id\":1,\"name\":\"Name\",\"description\":\"Description\",\"revision\":2,\"lastModifiedDate\":\"%s\",\"configuration\":{},\"ciphertext\"", DateUtils.formatIsoDate(workspaceMetaData.getLastModifiedDate()))));
         assertTrue(jsonBuffer.toString().endsWith((json.substring(json.indexOf("ciphertext")))));
     }
 
@@ -809,6 +810,50 @@ public class WorkspaceComponentImplTests {
 
         workspaceComponent.unshareWorkspace(1);
         assertEquals("", workspaceMetaData.getSharingToken());
+    }
+
+    @Test
+    public void test_putWorkspace_ThrowsAnException_WhenWorkspaceScopeValidationIsStrictAndTheWorkspaceIsUnscoped() throws Exception {
+        Workspace workspace = new Workspace("Name", "Description");
+        workspace.getConfiguration().setScope(null);
+
+        String json = WorkspaceUtils.toJson(workspace, false);
+
+        final WorkspaceMetaData wmd = new WorkspaceMetaData(1);
+        wmd.setPublicWorkspace(false);
+
+        WorkspaceDao dao = new MockWorkspaceDao();
+
+        WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "");
+        try {
+            Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_SCOPE_VALIDATION);
+            workspaceComponent.putWorkspace(1, json);
+            fail();
+        } catch (WorkspaceComponentException e) {
+            assertEquals("Strict workspace scope validation has been enabled on this on-premises installation, but this workspace has no defined scope - see https://docs.structurizr.com/workspaces for more information.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void test_putWorkspace_ThrowsAnException_WhenWorkspaceScopeValidationFails() throws Exception {
+        Workspace workspace = new Workspace("Name", "Description");
+        workspace.getConfiguration().setScope(WorkspaceScope.Landscape);
+        workspace.getModel().addSoftwareSystem("A").addContainer("AA");
+
+        String json = WorkspaceUtils.toJson(workspace, false);
+
+        final WorkspaceMetaData wmd = new WorkspaceMetaData(1);
+        wmd.setPublicWorkspace(false);
+
+        WorkspaceDao dao = new MockWorkspaceDao();
+
+        WorkspaceComponent workspaceComponent = new WorkspaceComponentImpl(dao, "");
+        try {
+            workspaceComponent.putWorkspace(1, json);
+            fail();
+        } catch (WorkspaceComponentException e) {
+            assertEquals("Workspace is landscape scoped, but the software system named A has containers.", e.getMessage());
+        }
     }
 
 }

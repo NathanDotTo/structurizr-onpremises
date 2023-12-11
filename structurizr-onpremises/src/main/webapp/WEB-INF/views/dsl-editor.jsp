@@ -216,7 +216,7 @@
             if (dslSource !== undefined) {
                 editorSource = structurizr.util.atob(dslSource);
             } else {
-                editorSource = 'workspace "Name" "Description" {\n\n\tmodel {\n\t}\n\n}';
+                editorSource = 'workspace "Name" "Description" {\n\n\tmodel {\n\t}\n\n\tconfiguration {\n\t\tscope softwaresystem\n\t}\n\n}';
             }
 
             editorSource = editorSource.replaceAll('\t', '    ');
@@ -318,7 +318,7 @@
 
     function changeView() {
         if (structurizr.workspace.hasViews()) {
-            document.getElementById('diagramEditorIframe').contentWindow.structurizr.diagram.changeView(viewInFocus);
+            document.getElementById('diagramEditorIframe').contentWindow.changeView(structurizr.workspace.findViewByKey(viewInFocus));
             $('#diagramEditorIframe').focus();
         }
     }

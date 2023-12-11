@@ -5,6 +5,7 @@ import com.structurizr.Workspace;
 import com.structurizr.configuration.Role;
 import com.structurizr.configuration.Visibility;
 import com.structurizr.configuration.WorkspaceConfiguration;
+import com.structurizr.configuration.WorkspaceScope;
 import com.structurizr.encryption.AesEncryptionStrategy;
 import com.structurizr.encryption.EncryptedWorkspace;
 import com.structurizr.encryption.EncryptionLocation;
@@ -14,12 +15,11 @@ import com.structurizr.io.json.EncryptedJsonWriter;
 import com.structurizr.onpremises.domain.Image;
 import com.structurizr.onpremises.domain.InputStreamAndContentLength;
 import com.structurizr.onpremises.domain.User;
-import com.structurizr.onpremises.util.Configuration;
-import com.structurizr.onpremises.util.DateUtils;
-import com.structurizr.onpremises.util.Features;
-import com.structurizr.onpremises.util.StructurizrProperties;
+import com.structurizr.onpremises.util.*;
 import com.structurizr.util.StringUtils;
 import com.structurizr.util.WorkspaceUtils;
+import com.structurizr.validation.WorkspaceScopeValidationException;
+import com.structurizr.validation.WorkspaceScopeValidatorFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -224,6 +224,11 @@ public class WorkspaceComponentImpl implements WorkspaceComponent {
             NumberFormat format = new DecimalFormat("0000");
 
             Workspace workspace = new Workspace("Workspace " + format.format(workspaceId), "Description");
+
+            if (Configuration.getInstance().isFeatureEnabled(Features.WORKSPACE_SCOPE_VALIDATION)) {
+                workspace.getConfiguration().setScope(WorkspaceScope.SoftwareSystem);
+            }
+
             String json = WorkspaceUtils.toJson(workspace, false);
 
             putWorkspace(workspaceId, json);
@@ -287,6 +292,7 @@ public class WorkspaceComponentImpl implements WorkspaceComponent {
                 // also remove the workspace configuration
                 configuration = encryptedWorkspace.getConfiguration();
                 encryptedWorkspace.clearConfiguration();
+                encryptedWorkspace.getConfiguration().setScope(configuration.getScope());
 
                 // copy the last modified details from the workspace
                 workspaceMetaData.setLastModifiedDate(encryptedWorkspace.getLastModifiedDate());
@@ -303,6 +309,9 @@ public class WorkspaceComponentImpl implements WorkspaceComponent {
                 jsonToBeStored = stringWriter.toString();
             } else {
                 Workspace workspace = WorkspaceUtils.fromJson(json);
+
+                WorkspaceValidationUtils.validateWorkspaceScope(workspace);
+
                 workspace.setId(workspaceId);
                 workspace.setLastModifiedDate(DateUtils.removeMilliseconds(DateUtils.getNow()));
 
@@ -317,6 +326,7 @@ public class WorkspaceComponentImpl implements WorkspaceComponent {
                 // also remove the configuration
                 configuration = workspace.getConfiguration();
                 workspace.clearConfiguration();
+                workspace.getConfiguration().setScope(configuration.getScope());
 
                 // copy the last modified details from the workspace
                 workspaceMetaData.setLastModifiedDate(workspace.getLastModifiedDate());
